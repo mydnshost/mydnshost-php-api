@@ -1,2 +1,2 @@
 # mydnshost-php-api
-PHP API Client for mydnshost.co.uk
+PHP API for mydnshost.co.uk
