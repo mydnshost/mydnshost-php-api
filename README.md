@@ -10,7 +10,7 @@ Example usage, listing domains:
 ```php
   require_once(dirname(__FILE__) . '/MyDNSHostAPI.php');
   $api = new MyDNSHostAPI('https://api.mydnshost.co.uk/');
-  $api->setAuthUserKey('admin@example.org.uk', 'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE');
+  $api->setAuthUserKey('admin@example.org', 'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE');
 
   $domains = $api->getDomains();
   var_dump($domains);
