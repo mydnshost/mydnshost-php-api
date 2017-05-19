@@ -12,6 +12,6 @@
     ],
     "require": {
         "php": ">=7.0",
-        "rmccue/requests": "^1.7",
+        "rmccue/requests": "^1.7"
     }
 }
