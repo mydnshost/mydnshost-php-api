@@ -1,7 +1,7 @@
 {
     "name": "mydnshost/mydnshost-php-api",
     "description": "PHP API for mydnshost.co.uk",
-    "homepage": "https://github.com/ShaneMcC/mydnshost-php-api",
+    "homepage": "https://github.com/mydnshost/mydnshost-php-api",
     "license": "MIT",
     "authors": [
         {
