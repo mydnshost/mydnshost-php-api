@@ -17,9 +17,11 @@
 		/** Are we impersonating an email address or an ID? */
 		private $impersonateType = FALSE;
 		/** Are we accessing domain functions with admin override? */
-		private $domainAdmin = FALSE;
+		private $domainAdminOverride = FALSE;
 		/** Debug mode value. */
 		private $debug = FALSE;
+		/** Last API Response */
+		private $lastResponse = NULL;
 
 		/**
 		 * Create a new MyDNSHostAPI
@@ -55,10 +57,11 @@
 		 *
 		 * @param $user User to auth with
 		 * @param $pass Password to auth with
+		 * @param $key (Optional) 2FA Key for login.
 		 * @return $this for chaining.
 		 */
-		public function setAuthUserPass($user, $pass) {
-			$this->auth = ['type' => 'userpass', 'user' => $user, 'pass' => $pass];
+		public function setAuthUserPass($user, $pass, $key = NULL) {
+			$this->auth = ['type' => 'userpass', 'user' => $user, 'pass' => $pass, '2fa' => $key];
 			return $this;
 		}
 
@@ -248,6 +251,68 @@
 		}
 
 		/**
+		 * Get 2FA Keys for the current user
+		 *
+		 * @return Array of 2FA keys.
+		 */
+		public function get2FAKeys() {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/users/self/2fa');
+			return isset($result['response']) ? $result['response'] : NULL;
+		}
+
+		/**
+		 * Create a new 2FA Key.
+		 *
+		 * @param $data Data to use for the create
+		 * @return Result of create operation.
+		 */
+		public function create2FAKey($data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/self/2fa', 'POST', $data);
+		}
+
+		/**
+		 * Update a new 2FA Key.
+		 *
+		 * @param $key Key to update
+		 * @param $data Data to use for the update
+		 * @return Result of update operation.
+		 */
+		public function update2FAKey($key, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/self/2fa/' . $key, 'POST', $data);
+		}
+
+		/**
+		 * Verify a new 2FA Key.
+		 *
+		 * @param $key Key to verify
+		 * @param $code Code to verify with
+		 * @return Result of update operation.
+		 */
+		public function verify2FAKey($key, $code) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/self/2fa/' . $key . '/verify', 'POST', ['code' => $code]);
+		}
+
+		/**
+		 * Delete a new 2FA Key.
+		 *
+		 * @param $key Key to delete
+		 * @return Result of delete operation.
+		 */
+		public function delete2FAKey($key) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/self/2fa/' . $key, 'DELETE');
+		}
+
+		/**
 		 * Get a session ID from the backend
 		 *
 		 * @return Backend session ID or null if we are not authed.
@@ -266,7 +331,7 @@
 		 * @param $value (Default: true) Set value for domain admin override.
 		 */
 		public function domainAdmin($value = true) {
-			$this->domainAdmin = true;
+			$this->domainAdminOverride = true;
 
 			return $this;
 		}
@@ -279,7 +344,7 @@
 		public function getDomains() {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains');
+			$result = $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains');
 			return isset($result['response']) ? $result['response'] : [];
 		}
 
@@ -298,7 +363,7 @@
 				$data['owner'] = $owner;
 			}
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains', 'POST', $data);
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains', 'POST', $data);
 		}
 
 		/**
@@ -310,7 +375,7 @@
 		public function deleteDomain($domain) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain, 'DELETE');
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain, 'DELETE');
 		}
 
 		/**
@@ -322,7 +387,7 @@
 		public function getDomainData($domain) {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain);
+			$result = $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain);
 			return isset($result['response']) ? $result['response'] : NULL;
 		}
 
@@ -336,7 +401,7 @@
 		public function setDomainData($domain, $data) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain, 'POST', $data);
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain, 'POST', $data);
 		}
 
 		/**
@@ -348,7 +413,7 @@
 		public function getDomainAccess($domain) {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/access');
+			$result = $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/access');
 			return isset($result['response']['access']) ? $result['response']['access'] : [];
 		}
 
@@ -362,7 +427,7 @@
 		public function setDomainAccess($domain, $data) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/access', 'POST', $data);
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/access', 'POST', $data);
 		}
 
 		/**
@@ -374,7 +439,7 @@
 		public function syncDomain($domain) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/sync');
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/sync');
 		}
 
 		/**
@@ -386,7 +451,7 @@
 		public function exportZone($domain) {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/export');
+			$result = $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/export');
 			return isset($result['response']['zone']) ? $result['response']['zone'] : [];
 		}
 
@@ -400,8 +465,9 @@
 		public function importZone($domain, $zone) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/import', 'POST', ['zone' => $zone]);
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/import', 'POST', ['zone' => $zone]);
 		}
+
 
 		/**
 		 * Get domain records for a given domain.
@@ -412,22 +478,7 @@
 		public function getDomainRecords($domain) {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records');
-			return isset($result['response']['records']) ? $result['response']['records'] : [];
-		}
-
-		/**
-		 * Get domain records for a given domain filtered by name
-		 *
-		 * @param $domain Domain to get records for
-		 * @param $name Record name to get
-		 * @param $type (Optional) optional type to limit to
-		 * @return Array of records or an empty array.
-		 */
-		public function getDomainRecordsByName($domain, $name, $type = null) {
-			if ($this->auth === FALSE) { return []; }
-
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/record/' . $name . ($type != null ? '/' . $type : ''));
+			$result = $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/records');
 			return isset($result['response']['records']) ? $result['response']['records'] : [];
 		}
 
@@ -441,36 +492,16 @@
 		public function setDomainRecords($domain, $data) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records', 'POST', $data);
-		}
-
-
-		/**
-		 * Delete records for a given domain.
-		 *
-		 * @param $domain Domain to delete records for
-		 * @return Result from API
-		 */
-		public function deleteDomainRecords($domain) {
-			if ($this->auth === FALSE) { return []; }
-
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records', 'DELETE');
-			return $result['response'];
+			return $this->api(($this->domainAdminOverride ? '/admin' : '') . '/domains/' . $domain . '/records', 'POST', $data);
 		}
 
 		/**
-		 * Delete records for a given domain.
+		 * Get the last response from the API
 		 *
-		 * @param $domain Domain to delete records for
-		 * @param $name Record name to delete
-		 * @param $type (Optional) optional type to limit delete to
-		 * @return Result from API
+		 * @return Last API Response.
 		 */
-		public function deleteDomainRecordsByName($domain, $name, $type = null) {
-			if ($this->auth === FALSE) { return []; }
-
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/record/' . $name . ($type != null ? '/' . $type : ''), 'DELETE');
-			return $result['response'];
+		public function getLastResponse() {
+			return $this->lastResponse;
 		}
 
 		/**
@@ -492,6 +523,9 @@
 					$headers['X-API-KEY'] = $this->auth['key'];
 				} else if ($this->auth['type'] == 'userpass') {
 					$options['auth'] = [$this->auth['user'], $this->auth['pass']];
+					if (isset($this->auth['2fa'])) {
+						$headers['X-2FA-KEY'] = $this->auth['2fa'];
+					}
 				}
 			}
 
@@ -531,6 +565,7 @@
 				$data['__DEBUG'] = $debug;
 			}
 
+			$this->lastResponse = $data;
 			return $data;
 		}
 	}
