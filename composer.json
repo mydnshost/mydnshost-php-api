@@ -1,0 +1,17 @@
+{
+    "name": "shanemcc/mydnshost-php-api",
+    "description": "PHP API for mydnshost.co.uk",
+    "homepage": "https://github.com/ShaneMcC/mydnshost-php-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shane Mc Cormack",
+            "email": "shanemcc@gmail.com",
+            "homepage": "http://www.dataforce.org.uk/"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "rmccue/requests": "^1.7",
+    }
+}
