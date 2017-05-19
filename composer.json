@@ -13,5 +13,10 @@
     "require": {
         "php": ">=7.0",
         "rmccue/requests": "^1.7"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
     }
 }
