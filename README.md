@@ -5,11 +5,13 @@ At the moment this is a very simple library, will composerise this in future and
 
 This implements version 1.0 of the API as documented at https://api.mydnshost.co.uk/1.0/docs/
 
+Installation is via `composer require mydnshost/mydnshost-php-api`
+
 Example usage, listing domains:
 
 ```php
-  require_once(dirname(__FILE__) . '/MyDNSHostAPI.php');
-  $api = new MyDNSHostAPI('https://api.mydnshost.co.uk/');
+  require_once(__DIR__ . '/vendor/autoload.php');
+  $api = new MyDNSHostAPI($config['api']);
   $api->setAuthUserKey('admin@example.org', 'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE');
 
   $domains = $api->getDomains();
@@ -18,6 +20,10 @@ Example usage, listing domains:
 
 Example usage, importing zone files:
 ```php
+  require_once(__DIR__ . '/vendor/autoload.php');
+  $api = new MyDNSHostAPI($config['api']);
+  $api->setAuthUserKey('admin@example.org', 'AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE');
+
   $domain = 'test.com';
   $zonedata = file_get_contents('test.com.db');
 
