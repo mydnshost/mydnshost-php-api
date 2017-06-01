@@ -208,7 +208,7 @@
 			if ($this->auth === FALSE) { return NULL; }
 
 			$result = $this->api('/users/self/keys');
-			return isset($result['response']) ? $result['response'] : NULL;
+			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
 		}
 
 		/**
@@ -257,7 +257,7 @@
 			if ($this->auth === FALSE) { return NULL; }
 
 			$result = $this->api('/users/self/2fa');
-			return isset($result['response']) ? $result['response'] : NULL;
+			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
 		}
 
 		/**
@@ -535,6 +535,59 @@
 
 			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/record/' . $name . ($type != null ? '/' . $type : ''), 'DELETE');
 			return $result['response'];
+		}
+
+		/**
+		 * Get Domain Keys for the given domain
+		 *
+		 * @param $domain Domain to get keys for
+		 * @return Array of domain keys.
+		 */
+		public function getDomainKeys($domain) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/keys');
+			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
+		}
+
+		/**
+		 * Create a new Domain Key.
+		 *
+		 * @param $domain Domain to create key for
+		 * @param $data Data to use for the create
+		 * @return Result of create operation.
+		 */
+		public function createDomainKey($domain, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/keys', 'POST', $data);
+		}
+
+		/**
+		 * Update a Domain Key.
+		 *
+		 * @param $domain Domain to update key for
+		 * @param $key Key to update
+		 * @param $data Data to use for the update
+		 * @return Result of update operation.
+		 */
+		public function updateDomainKey($domain, $key, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/keys/' . $key, 'POST', $data);
+		}
+
+		/**
+		 * Delete a Domain Key.
+		 *
+		 * @param $domain Domain to delete key for
+		 * @param $key Key to delete
+		 * @return Result of delete operation.
+		 */
+		public function deleteDomainKey($domain, $key) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/keys/' . $key, 'DELETE');
 		}
 
 		/**
