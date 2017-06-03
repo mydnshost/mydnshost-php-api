@@ -76,6 +76,18 @@
 		}
 
 		/**
+		 * Auth using a domain and domain key.
+		 *
+		 * @param $domain Domain to auth with
+		 * @param $key Key to auth with
+		 * @return $this for chaining.
+		 */
+		public function setAuthDomainKey($domain, $key) {
+			$this->auth = ['type' => 'domainkey', 'domain' => $domain, 'key' => $key];
+			return $this;
+		}
+
+		/**
 		 * Auth using a session ID.
 		 *
 		 * @param $sessionid ID to auth with
@@ -616,6 +628,9 @@
 				} else if ($this->auth['type'] == 'userkey') {
 					$headers['X-API-USER'] = $this->auth['user'];
 					$headers['X-API-KEY'] = $this->auth['key'];
+				} else if ($this->auth['type'] == 'domainkey') {
+					$headers['X-DOMAIN'] = $this->auth['domain'];
+					$headers['X-DOMAIN-KEY'] = $this->auth['key'];
 				} else if ($this->auth['type'] == 'userpass') {
 					$options['auth'] = [$this->auth['user'], $this->auth['pass']];
 					if (isset($this->auth['2fa'])) {
