@@ -124,6 +124,71 @@
 		}
 
 		/**
+		 * Ping the API
+		 *
+		 * @param $time [Optional] Time to send as extra param.
+		 * @return Data from API
+		 */
+		public function ping($time = NULL) {
+			return $time === NULL ? $this->api('/ping', 'GET') : $this->api('/ping/' . $time, 'GET');
+		}
+
+		/**
+		 * Register a new account.
+		 *
+		 * @param $email Email address
+		 * @param $name Real name
+		 * @return Data from API
+		 */
+		public function register($email, $name) {
+			return $this->api('/register', 'POST', ['email' => $email, 'realname' => $name]);
+		}
+
+		/**
+		 * Confirm account registration
+		 *
+		 * @param $user User ID
+		 * @param $code Verify Code
+		 * @param $password Requested Password
+		 * @return Data from API
+		 */
+		public function registerConfirm($user, $code, $password) {
+			return $this->api('/register/confirm/' . $user, 'POST', ['code' => $code, 'password' => $password]);
+		}
+
+		/**
+		 * Resend welcome email.
+		 *
+		 * @param $user User ID
+		 * @return Data from API
+		 */
+		public function resendWelcome($userid) {
+			return $this->api('/users/' . $userid . '/resendwelcome', 'POST', []);
+		}
+
+		/**
+		 * Submit a password reset request
+		 *
+		 * @param $email Email address
+		 * @return Data from API
+		 */
+		public function forgotpassword($email) {
+			return $this->api('/forgotpassword', 'POST', ['email' => $email]);
+		}
+
+		/**
+		 * Confirm a password reset request
+		 *
+		 * @param $user User ID
+		 * @param $code Verify Code
+		 * @param $password Requested Password
+		 * @return Data from API
+		 */
+		public function forgotpasswordConfirm($user, $code, $password) {
+			return $this->api('/forgotpassword/confirm/' . $user, 'POST', ['code' => $code, 'password' => $password]);
+		}
+
+		/**
 		 * Check if we have valid auth details.
 		 *
 		 * @return True if we can auth successfully.
