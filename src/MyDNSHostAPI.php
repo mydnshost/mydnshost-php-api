@@ -130,14 +130,25 @@
 		 * @return Data from API
 		 */
 		public function ping($time = NULL) {
-			return $time === NULL ? $this->api('/ping', 'GET') : $this->api('/ping/' . $time, 'GET');
+			$result = $time === NULL ? $this->api('/ping', 'GET') : $this->api('/ping/' . $time, 'GET');
+			return isset($result['response']) ? $result['response'] : NULL;
+		}
+
+		/**
+		 * Get version info from the API.
+		 *
+		 * @return Array of user data or null if we are not authed.
+		 */
+		public function getVersion() {
+			$result = $this->api('/version');
+			return isset($result['response']) ? $result['response'] : NULL;
 		}
 
 		/**
 		 * Register a new account.
 		 *
 		 * @param $email Email address
-		 * @param $name Real name
+		 * @param $name Real namereturn isset($result['response']) ? $result['response'] : NULL;/sessi
 		 * @return Data from API
 		 */
 		public function register($email, $name) {
@@ -277,14 +288,15 @@
 		}
 
 		/**
-		 * Get API Keys for the current user
+		 * Get API Keys for a user
 		 *
+		 * @param  $userid User ID to get keys for
 		 * @return Array of api keys.
 		 */
-		public function getAPIKeys() {
+		public function getAPIKeys($userid = 'self') {
 			if ($this->auth === FALSE) { return NULL; }
 
-			$result = $this->api('/users/self/keys');
+			$result = $this->api('/users/' . $userid . '/keys');
 			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
 		}
 
@@ -292,48 +304,52 @@
 		 * Create a new API Key.
 		 *
 		 * @param $data Data to use for the create
+		 * @param $userid User ID to create key for
 		 * @return Result of create operation.
 		 */
-		public function createAPIKey($data) {
+		public function createAPIKey($data, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/keys', 'POST', $data);
+			return $this->api('/users/' . $userid . '/keys', 'POST', $data);
 		}
 
 		/**
-		 * Create a new API Key.
+		 * Update an API Key.
 		 *
 		 * @param $key Key to update
 		 * @param $data Data to use for the update
+		 * @param $userid User ID to update key for
 		 * @return Result of update operation.
 		 */
-		public function updateAPIKey($key, $data) {
+		public function updateAPIKey($key, $data, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/keys/' . $key, 'POST', $data);
+			return $this->api('/users/' . $userid . '/keys/' . $key, 'POST', $data);
 		}
 
 		/**
 		 * Delete a new API Key.
 		 *
 		 * @param $key Key to delete
+		 * @param $userid User ID to delete key for
 		 * @return Result of delete operation.
 		 */
-		public function deleteAPIKey($key) {
+		public function deleteAPIKey($key, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/keys/' . $key, 'DELETE');
+			return $this->api('/users/' . $userid . '/keys/' . $key, 'DELETE');
 		}
 
 		/**
 		 * Get 2FA Keys for the current user
 		 *
+		 * @param $userid User ID to get keys for
 		 * @return Array of 2FA keys.
 		 */
-		public function get2FAKeys() {
+		public function get2FAKeys($userid = 'self') {
 			if ($this->auth === FALSE) { return NULL; }
 
-			$result = $this->api('/users/self/2fa');
+			$result = $this->api('/users/' . $userid . '/2fa');
 			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
 		}
 
@@ -341,50 +357,54 @@
 		 * Create a new 2FA Key.
 		 *
 		 * @param $data Data to use for the create
+		 * @param $userid User ID to create key for
 		 * @return Result of create operation.
 		 */
-		public function create2FAKey($data) {
+		public function create2FAKey($data, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/2fa', 'POST', $data);
+			return $this->api('/users/' . $userid . '/2fa', 'POST', $data);
 		}
 
 		/**
-		 * Update a new 2FA Key.
+		 * Update a 2FA Key.
 		 *
 		 * @param $key Key to update
 		 * @param $data Data to use for the update
+		 * @param $userid User ID to update key for
 		 * @return Result of update operation.
 		 */
-		public function update2FAKey($key, $data) {
+		public function update2FAKey($key, $data, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/2fa/' . $key, 'POST', $data);
+			return $this->api('/users/' . $userid . '/2fa/' . $key, 'POST', $data);
 		}
 
 		/**
-		 * Verify a new 2FA Key.
+		 * Verify a 2FA Key.
 		 *
 		 * @param $key Key to verify
 		 * @param $code Code to verify with
+		 * @param $userid User ID to verify key for
 		 * @return Result of update operation.
 		 */
-		public function verify2FAKey($key, $code) {
+		public function verify2FAKey($key, $code, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/2fa/' . $key . '/verify', 'POST', ['code' => $code]);
+			return $this->api('/users/' . $userid . '/2fa/' . $key . '/verify', 'POST', ['code' => $code]);
 		}
 
 		/**
-		 * Delete a new 2FA Key.
+		 * Delete a 2FA Key.
 		 *
 		 * @param $key Key to delete
+		 * @param $userid User ID to delete key for
 		 * @return Result of delete operation.
 		 */
-		public function delete2FAKey($key) {
+		public function delete2FAKey($key, $userid = 'self') {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/users/self/2fa/' . $key, 'DELETE');
+			return $this->api('/users/' . $userid . '/2fa/' . $key, 'DELETE');
 		}
 
 		/**
@@ -399,6 +419,17 @@
 			return isset($result['response']['session']) ? $result['response']['session'] : NULL;
 		}
 
+		/**
+		 * Delete our session
+		 *
+		 * @return Result of delete operation.
+		 */
+		public function deleteSession() {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/session', 'DELETE');
+			return isset($result['response']['session']) ? $result['response']['session'] : NULL;
+		}
 
 		/**
 		 * Enable or disable domain admin-override.
@@ -558,6 +589,20 @@
 		}
 
 		/**
+		 * Get domain record for a given domain by id
+		 *
+		 * @param $domain Domain to get record for
+		 * @param $id Record ID to get
+		 * @return Array of records or an empty array.
+		 */
+		public function getDomainRecord($domain, $id) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records/' . $id);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
 		 * Get domain records for a given domain filtered by name
 		 *
 		 * @param $domain Domain to get records for
@@ -585,6 +630,19 @@
 			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records', 'POST', $data);
 		}
 
+		/**
+		 * Set domain records for a given domain.
+		 *
+		 * @param $domain Domain to set record for
+		 * @param $id Record ID to set
+		 * @param $data Data to set
+		 * @return Result from API
+		 */
+		public function setDomainRecord($domain, $id, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records/' . $id, 'POST', $data);
+		}
 
 		/**
 		 * Delete records for a given domain.
@@ -596,6 +654,20 @@
 			if ($this->auth === FALSE) { return []; }
 
 			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records', 'DELETE');
+			return $result['response'];
+		}
+
+		/**
+		 * Delete a record for a given domain.
+		 *
+		 * @param $domain Domain to delete record for
+		 * @param $id Record ID to delete
+		 * @return Result from API
+		 */
+		public function deleteDomainRecord($domain, $id) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records/' . $id, 'DELETE');
 			return $result['response'];
 		}
 
