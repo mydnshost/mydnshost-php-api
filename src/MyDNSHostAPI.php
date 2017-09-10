@@ -537,6 +537,20 @@
 		}
 
 		/**
+		 * Get domain statistics
+		 *
+		 * @param $domain Domain to get stats for.
+		 * @param $options Options to pass to statistics.
+		 * @return Array of stats.
+		 */
+		public function getDomainStats($domain, $options = []) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/stats', 'GET', $options);
+			return isset($result['response']['stats']) ? $result['response']['stats'] : [];
+		}
+
+		/**
 		 * Attempt to sync the domain to the backends.
 		 *
 		 * @param $domain Domain to export.
