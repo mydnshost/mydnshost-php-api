@@ -250,6 +250,18 @@
 		}
 
 		/**
+		 * Get system stats.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getSystemStats($type, $options) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/system/stats/' . $type, 'GET', $options);
+			return isset($result['response']['stats']) ? $result['response']['stats'] : [];
+		}
+
+		/**
 		 * Set information a given user id.
 		 *
 		 * @param $userid User ID to get data for (Default: 'self')
