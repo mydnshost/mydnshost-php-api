@@ -238,6 +238,18 @@
 		}
 
 		/**
+		 * Get system info.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getSystemDataValue($key) {
+			if ($this->auth === FALSE || empty($key)) { return NULL; }
+
+			$result = $this->api('/system/datavalue/' . $key);
+			return isset($result['response'][$key]) ? $result['response'][$key] : NULL;
+		}
+
+		/**
 		 * Set information a given user id.
 		 *
 		 * @param $userid User ID to get data for (Default: 'self')
