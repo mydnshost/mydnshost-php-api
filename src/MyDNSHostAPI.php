@@ -432,6 +432,60 @@
 		}
 
 		/**
+		 * Get Custom Data for the current user
+		 *
+		 * @param $userid User ID to get data for
+		 * @return Array of Custom Data.
+		 */
+		public function getCustomDataList($userid = 'self') {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/users/' . $userid . '/customdata');
+			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
+		}
+
+		/**
+		 * Create/Update a Custom Data Value.
+		 *
+		 * @param $key Key to create/update
+		 * @param $value Data to use for the create/update
+		 * @param $userid User ID to create/update for
+		 * @return Result of update operation.
+		 */
+		public function setCustomData($key, $value, $userid = 'self') {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/' . $userid . '/customdata/' . $key, 'POST', ['value' => $value]);
+		}
+
+		/**
+		 * Get a Custom Data Value.
+		 *
+		 * @param $key Key to get
+		 * @param $userid User ID to get for
+		 * @return Result of update operation.
+		 */
+		public function getCustomData($key, $userid = 'self') {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/users/' . $userid . '/customdata/' . $key, 'GET');
+			return isset($result['response']['value']) ? $result['response']['value'] : NULL;
+		}
+
+		/**
+		 * Delete a Custom Data Value.
+		 *
+		 * @param $key Key to delete
+		 * @param $userid User ID to delete key for
+		 * @return Result of delete operation.
+		 */
+		public function deleteCustomData($key, $userid = 'self') {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/' . $userid . '/customdata/' . $key, 'DELETE');
+		}
+
+		/**
 		 * Get a session ID from the backend
 		 *
 		 * @return Backend session ID or null if we are not authed.
