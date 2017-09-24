@@ -262,6 +262,21 @@
 		}
 
 		/**
+		 * Get users statistics
+		 *
+		 * @param $type Statistics type.
+		 * @param $options Options to pass to statistics.
+		 * @param $userid User ID to get data for (Default: 'self')
+		 * @return Array of stats.
+		 */
+		public function getUserStats($type, $options = [], $userID = 'self') {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/users/' . $userID . '/stats/' . $type, 'GET', $options);
+			return isset($result['response']['stats']) ? $result['response']['stats'] : [];
+		}
+
+		/**
 		 * Set information a given user id.
 		 *
 		 * @param $userid User ID to get data for (Default: 'self')
