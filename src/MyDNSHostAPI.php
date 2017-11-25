@@ -847,6 +847,59 @@
 		}
 
 		/**
+		 * Get Domain Hooks for the given domain
+		 *
+		 * @param $domain Domain to get hooks for
+		 * @return Array of domain hooks.
+		 */
+		public function getDomainHooks($domain) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/hooks');
+			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
+		}
+
+		/**
+		 * Create a new Domain Hook.
+		 *
+		 * @param $domain Domain to create hook for
+		 * @param $data Data to use for the create
+		 * @return Result of create operation.
+		 */
+		public function createDomainHook($domain, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/hooks', 'POST', $data);
+		}
+
+		/**
+		 * Update a Domain Hook.
+		 *
+		 * @param $domain Domain to update hook for
+		 * @param $hookid Hook ID to update
+		 * @param $data Data to use for the update
+		 * @return Result of update operation.
+		 */
+		public function updateDomainHook($domain, $hookid, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/hooks/' . $hookid, 'POST', $data);
+		}
+
+		/**
+		 * Delete a Domain Hook.
+		 *
+		 * @param $domain Domain to delete hook for
+		 * @param $hookid hookid to delete
+		 * @return Result of delete operation.
+		 */
+		public function deleteDomainHook($domain, $hookid) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/hooks/' . $hookid, 'DELETE');
+		}
+
+		/**
 		 * Get the last response from the API
 		 *
 		 * @return Last API Response.
