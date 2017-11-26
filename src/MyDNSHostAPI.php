@@ -20,6 +20,10 @@
 		private $debug = FALSE;
 		/** Last API Response */
 		private $lastResponse = NULL;
+		/** Our device ID. */
+		private $deviceID = NULL;
+		/** Our device Name. */
+		private $deviceName = NULL;
 
 		/**
 		 * Create a new MyDNSHostAPI
@@ -106,6 +110,28 @@
 		 */
 		public function setAuth($auth) {
 			$this->auth = $auth;
+			return $this;
+		}
+
+		/**
+		 * Set device ID
+		 *
+		 * @param $id Device ID
+		 * @return $this for chaining.
+		 */
+		public function setDeviceID($id) {
+			$this->deviceID = $id;
+			return $this;
+		}
+
+		/**
+		 * Set device Name
+		 *
+		 * @param $name Device Name
+		 * @return $this for chaining.
+		 */
+		public function setDeviceName($name) {
+			$this->deviceName = $name;
 			return $this;
 		}
 
@@ -377,6 +403,32 @@
 			if ($this->auth === FALSE) { return []; }
 
 			return $this->api('/users/' . $userid . '/keys/' . $key, 'DELETE');
+		}
+
+		/**
+		 * Get 2FA Devices for the current user
+		 *
+		 * @param $userid User ID to get devices for
+		 * @return Array of 2FA devices.
+		 */
+		public function get2FADevices($userid = 'self') {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/users/' . $userid . '/2fadevices');
+			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
+		}
+
+		/**
+		 * Delete a 2FA Device.
+		 *
+		 * @param $key Device to delete
+		 * @param $userid User ID to delete device for
+		 * @return Result of delete operation.
+		 */
+		public function delete2FADevice($device, $userid = 'self') {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/' . $userid . '/2fadevices/' . $device, 'DELETE');
 		}
 
 		/**
@@ -935,6 +987,9 @@
 					}
 				}
 			}
+
+			if ($this->deviceID !== NULL) { $headers['X-2FA-DEVICE-ID'] = $this->deviceID; }
+			if ($this->deviceName !== NULL) { $headers['X-2FA-SAVE-DEVICE'] = $this->deviceName; }
 
 			if ($this->impersonate !== FALSE) {
 				if ($this->impersonateType == 'id') {
