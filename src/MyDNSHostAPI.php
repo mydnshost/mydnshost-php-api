@@ -206,6 +206,16 @@
 		}
 
 		/**
+		 * Accept the terms of service.
+		 *
+		 * @param $user (Optional) User ID - defaults to self.
+		 * @return Data from API
+		 */
+		public function acceptTerms($userid = 'self') {
+			return $this->api('/users/' . $userid . '/acceptterms', 'POST', ['acceptterms' => "true"]);
+		}
+
+		/**
 		 * Submit a password reset request
 		 *
 		 * @param $email Email address
