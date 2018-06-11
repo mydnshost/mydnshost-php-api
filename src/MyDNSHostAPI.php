@@ -174,11 +174,13 @@
 		 * Register a new account.
 		 *
 		 * @param $email Email address
-		 * @param $name Real namereturn isset($result['response']) ? $result['response'] : NULL;/sessi
+		 * @param $name Real name
+		 * @param $acceptTerms Do we accept the terms of registration?
 		 * @return Data from API
 		 */
-		public function register($email, $name) {
-			return $this->api('/register', 'POST', ['email' => $email, 'realname' => $name]);
+		public function register($email, $name, $acceptTerms = false) {
+			$registrationData = ['email' => $email, 'realname' => $name, 'acceptterms' => $acceptTerms];
+			return $this->api('/register', 'POST', $registrationData);
 		}
 
 		/**
@@ -269,7 +271,7 @@
 		 * @return Result from the API.
 		 */
 		public function getSystemDataValue($key) {
-			if ($this->auth === FALSE || empty($key)) { return NULL; }
+			if (empty($key)) { return NULL; }
 
 			$result = $this->api('/system/datavalue/' . $key);
 			return isset($result['response'][$key]) ? $result['response'][$key] : NULL;
