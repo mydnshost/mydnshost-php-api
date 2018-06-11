@@ -353,6 +353,20 @@
 		}
 
 		/**
+		 * Confirm delete the given user id
+		 *
+		 * @param $userid User ID to delete.
+		 * @param $confirmCode Confirmation code.
+		 * @param $twoFactorCode Optional twofactor code.
+		 * @return Result from the api
+		 */
+		public function deleteUserConfirm($userID, $confirmCode, $twoFactorCode = '') {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/users/' . $userID . '/confirm/' . $confirmCode . (!empty($twoFactorCode) ? '/' . $twoFactorCode : ''), 'DELETE');
+		}
+
+		/**
 		 * Get API Keys for a user
 		 *
 		 * @param  $userid User ID to get keys for
