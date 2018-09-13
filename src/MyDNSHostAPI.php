@@ -994,7 +994,7 @@
 		 * @param $data (Default: []) Data to send if POST
 		 * @return Response from the API as an array.
 		 */
-		private function api($apimethod, $method = 'GET', $data = []) {
+		public function api($apimethod, $method = 'GET', $data = []) {
 			$headers = [];
 			$options = [];
 			if ($this->auth !== FALSE) {
