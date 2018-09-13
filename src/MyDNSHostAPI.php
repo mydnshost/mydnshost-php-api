@@ -722,6 +722,19 @@
 		}
 
 		/**
+		 * Get domain logs
+		 *
+		 * @param $domain Domain to get logs for.
+		 * @return Array of logs.
+		 */
+		public function getDomainLogs($domain) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/logs', 'GET', $options);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
 		 * Attempt to sync the domain to the backends.
 		 *
 		 * @param $domain Domain to export.
