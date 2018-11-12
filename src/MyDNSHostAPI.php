@@ -991,6 +991,16 @@
 		}
 
 		/**
+		 * Get articles.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getArticles() {
+			$result = $this->api('/articles');
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
 		 * Get the last response from the API
 		 *
 		 * @return Last API Response.
