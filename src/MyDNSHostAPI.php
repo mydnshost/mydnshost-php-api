@@ -783,7 +783,7 @@
 			if ($this->auth === FALSE) { return []; }
 
 			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/records');
-			return isset($result['response']['records']) ? $result['response']['records'] : [];
+			return isset($result['response']) ? $result['response'] : [];
 		}
 
 		/**
