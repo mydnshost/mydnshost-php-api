@@ -68,6 +68,20 @@
 		}
 
 		/**
+		 * Auth using 2FA Push.
+		 * This isn't a real auth type, but will get us a 2fa code to use.
+		 *
+		 * @param $user User to auth with
+		 * @param $pass Password to auth with
+		 * @return $this for chaining.
+		 */
+		public function doAuth2FAPush($user, $pass) {
+			$auth = ['type' => 'userpass', 'user' => $user, 'pass' => $pass, '2fa_push' => true];
+
+			return $this->api('/session', 'GET', [], $auth);
+		}
+
+		/**
 		 * Auth using a username and api key.
 		 *
 		 * @param $user User to auth with
@@ -1077,24 +1091,30 @@
 		 * @param $apimethod API Method to poke
 		 * @param $method Request method to access the API with
 		 * @param $data (Default: []) Data to send if POST
+		 * @param $auth (Default: []) Custom auth data to use for just this request.
 		 * @return Response from the API as an array.
 		 */
-		public function api($apimethod, $method = 'GET', $data = []) {
+		public function api($apimethod, $method = 'GET', $data = [], $auth = NULL) {
 			$headers = [];
 			$options = [];
-			if ($this->auth !== FALSE) {
-				if ($this->auth['type'] == 'session') {
-					$headers['X-SESSION-ID'] = $this->auth['sessionid'];
-				} else if ($this->auth['type'] == 'userkey') {
-					$headers['X-API-USER'] = $this->auth['user'];
-					$headers['X-API-KEY'] = $this->auth['key'];
-				} else if ($this->auth['type'] == 'domainkey') {
-					$headers['X-DOMAIN'] = $this->auth['domain'];
-					$headers['X-DOMAIN-KEY'] = $this->auth['key'];
-				} else if ($this->auth['type'] == 'userpass') {
-					$options['auth'] = [$this->auth['user'], $this->auth['pass']];
-					if (isset($this->auth['2fa'])) {
-						$headers['X-2FA-KEY'] = $this->auth['2fa'];
+			if ($auth == NULL) { $auth = $this->auth; }
+
+			if ($auth !== FALSE) {
+				if ($auth['type'] == 'session') {
+					$headers['X-SESSION-ID'] = $auth['sessionid'];
+				} else if ($auth['type'] == 'userkey') {
+					$headers['X-API-USER'] = $auth['user'];
+					$headers['X-API-KEY'] = $auth['key'];
+				} else if ($auth['type'] == 'domainkey') {
+					$headers['X-DOMAIN'] = $auth['domain'];
+					$headers['X-DOMAIN-KEY'] = $auth['key'];
+				} else if ($auth['type'] == 'userpass') {
+					$options['auth'] = [$auth['user'], $auth['pass']];
+					if (isset($auth['2fa'])) {
+						$headers['X-2FA-KEY'] = $auth['2fa'];
+					}
+					if (isset($auth['2fa_push'])) {
+						$headers['X-2FA-PUSH'] = $auth['2fa_push'];
 					}
 				}
 			}
