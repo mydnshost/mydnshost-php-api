@@ -1001,6 +1001,68 @@
 		}
 
 		/**
+		 * Get all articles.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getAllArticles() {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/admin/articles');
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Crate a new article.
+		 *
+		 * @param $data Data for create
+		 * @return Result from the API.
+		 */
+		public function createArticle($data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/admin/articles', 'POST', $data);
+		}
+
+		/**
+		 * Get a specific article.
+		 *
+		 * @param $articleid Article to get
+		 * @return Result from the API.
+		 */
+		public function getArticle($articleid) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/admin/articles/' . $articleid);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Update a specific article.
+		 *
+		 * @param $articleid Article to update
+		 * @param $data Data for update
+		 * @return Result from the API.
+		 */
+		public function updateArticle($articleid) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/admin/articles/' . $articleid, 'POST', $data);
+		}
+
+		/**
+		 * Delete a specific article.
+		 *
+		 * @param $articleid Article to delete
+		 * @return Result from the API.
+		 */
+		public function deleteArticle($articleid) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/admin/articles/' . $articleid, 'DELETE');
+		}
+
+		/**
 		 * Get the last response from the API
 		 *
 		 * @return Last API Response.
