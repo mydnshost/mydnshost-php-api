@@ -1044,7 +1044,7 @@
 		 * @param $data Data for update
 		 * @return Result from the API.
 		 */
-		public function updateArticle($articleid) {
+		public function updateArticle($articleid, $data) {
 			if ($this->auth === FALSE) { return []; }
 
 			return $this->api('/admin/articles/' . $articleid, 'POST', $data);
