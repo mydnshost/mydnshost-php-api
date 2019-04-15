@@ -630,12 +630,17 @@
 		/**
 		 * Get list of our domains.
 		 *
+		 * @param $queryParams (Optional) Array of query params to use.
 		 * @return Array of domains or an empty array.
 		 */
-		public function getDomains() {
+		public function getDomains($queryParams = []) {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains');
+			$url = ($this->domainAdmin ? '/admin' : '') . '/domains';
+			$qs = http_build_query($queryParams);
+			if (!empty($qs)) { $url .= '?' . $qs; }
+
+			$result = $this->api($url);
 			return isset($result['response']) ? $result['response'] : [];
 		}
 
