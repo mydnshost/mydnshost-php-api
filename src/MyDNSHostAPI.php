@@ -117,6 +117,17 @@
 		}
 
 		/**
+		 * Auth using JWT Token.
+		 *
+		 * @param $token Token to auth with
+		 * @return $this for chaining.
+		 */
+		public function setAuthJWT($token) {
+			$this->auth = ['type' => 'jwt', 'token' => $token];
+			return $this;
+		}
+
+		/**
 		 * Auth using a custom auth method.
 		 *
 		 * @param $auth Auth data.
@@ -590,6 +601,18 @@
 			if ($this->auth === FALSE) { return []; }
 
 			return $this->api('/users/' . $userid . '/customdata/' . $key, 'DELETE');
+		}
+
+		/**
+		 * Get a JWT Token from the backend
+		 *
+		 * @return Backend JWT Token or null if we are not authed.
+		 */
+		public function getJWTToken() {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/session/jwt');
+			return isset($result['response']['token']) ? $result['response']['token'] : NULL;
 		}
 
 		/**
@@ -1105,7 +1128,9 @@
 			if ($auth == NULL) { $auth = $this->auth; }
 
 			if ($auth !== FALSE) {
-				if ($auth['type'] == 'session') {
+				if ($auth['type'] == 'jwt') {
+					$headers['Authorization'] = 'Bearer ' . $auth['token'];
+				} else if ($auth['type'] == 'session') {
 					$headers['X-SESSION-ID'] = $auth['sessionid'];
 				} else if ($auth['type'] == 'userkey') {
 					$headers['X-API-USER'] = $auth['user'];
