@@ -645,7 +645,7 @@
 		 * @param $value (Default: true) Set value for domain admin override.
 		 */
 		public function domainAdmin($value = true) {
-			$this->domainAdmin = true;
+			$this->domainAdmin = $value;
 
 			return $this;
 		}
