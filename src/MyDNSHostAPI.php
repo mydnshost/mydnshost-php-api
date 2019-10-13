@@ -792,12 +792,13 @@
 		 * Export domain as bind zone file.
 		 *
 		 * @param $domain Domain to export.
+		 * @param $type (Optional) Format to export as
 		 * @return Array of records or an empty array.
 		 */
-		public function exportZone($domain) {
+		public function exportZone($domain, $type = NULL) {
 			if ($this->auth === FALSE) { return []; }
 
-			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/export');
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/export' . ($type !== NULL ? '/' . $type : ''));
 			return isset($result['response']['zone']) ? $result['response']['zone'] : [];
 		}
 
@@ -806,12 +807,13 @@
 		 *
 		 * @param $domain Domain to import.
 		 * @param $zone Zonefile data
+		 * @param $type (Optional) Format to import from as
 		 * @return Array of records or an empty array.
 		 */
-		public function importZone($domain, $zone) {
+		public function importZone($domain, $zone, $type = NULL) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/import', 'POST', ['zone' => $zone]);
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/import' . ($type !== NULL ? '/' . $type : ''), 'POST', ['zone' => $zone]);
 		}
 
 
