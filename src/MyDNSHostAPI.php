@@ -305,11 +305,17 @@
 		 *
 		 * @return Result from the API.
 		 */
-		public function getSystemDataValue($key) {
+		public function getSystemDataValue($key, $all = false) {
 			if (empty($key)) { return NULL; }
 
 			$result = $this->api('/system/datavalue/' . $key);
-			return isset($result['response'][$key]) ? $result['response'][$key] : NULL;
+			if ($all && isset($result['response'])) {
+				return $result['response'];
+			} else if (!$all && isset($result['response'][$key])) {
+				return $result['response'][$key];
+			} else {
+				return NULL;
+			}
 		}
 
 		/**
