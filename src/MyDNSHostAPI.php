@@ -1113,16 +1113,6 @@
 		}
 
 		/**
-		 * Get blockregexes.
-		 *
-		 * @return Result from the API.
-		 */
-		public function getBlockRegexes() {
-			$result = $this->api('/blockregexes');
-			return isset($result['response']) ? $result['response'] : [];
-		}
-
-		/**
 		 * Get all blockregexes.
 		 *
 		 * @return Result from the API.
@@ -1135,7 +1125,7 @@
 		}
 
 		/**
-		 * Crate a new blockregex.
+		 * Create a new blockregex.
 		 *
 		 * @param $data Data for create
 		 * @return Result from the API.
