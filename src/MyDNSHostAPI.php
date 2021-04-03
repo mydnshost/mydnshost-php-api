@@ -1113,6 +1113,79 @@
 		}
 
 		/**
+		 * Get blockregexes.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getBlockRegexes() {
+			$result = $this->api('/blockregexes');
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Get all blockregexes.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getAllBlockRegexes() {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/admin/blockregexes');
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Crate a new blockregex.
+		 *
+		 * @param $data Data for create
+		 * @return Result from the API.
+		 */
+		public function createBlockRegex($data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/admin/blockregexes', 'POST', $data);
+		}
+
+		/**
+		 * Get a specific blockregex.
+		 *
+		 * @param $blockregexid BlockRegex to get
+		 * @return Result from the API.
+		 */
+		public function getBlockRegex($blockregexid) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/admin/blockregexes/' . $blockregexid);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Update a specific blockregex.
+		 *
+		 * @param $blockregexid BlockRegex to update
+		 * @param $data Data for update
+		 * @return Result from the API.
+		 */
+		public function updateBlockRegex($blockregexid, $data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/admin/blockregexes/' . $blockregexid, 'POST', $data);
+		}
+
+		/**
+		 * Delete a specific blockregex.
+		 *
+		 * @param $blockregexid BlockRegex to delete
+		 * @return Result from the API.
+		 */
+		public function deleteBlockRegex($blockregexid) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/admin/blockregexes/' . $blockregexid, 'DELETE');
+		}
+
+
+		/**
 		 * Get the last response from the API
 		 *
 		 * @return Last API Response.
