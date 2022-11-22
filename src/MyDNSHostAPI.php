@@ -785,13 +785,25 @@
 		/**
 		 * Attempt to sync the domain to the backends.
 		 *
-		 * @param $domain Domain to export.
-		 * @return Array of records or an empty array.
+		 * @param $domain Domain to sync.
+		 * @return API Result
 		 */
 		public function syncDomain($domain) {
 			if ($this->auth === FALSE) { return []; }
 
 			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/sync');
+		}
+
+		/**
+		 * Attempt to verify a domain.
+		 *
+		 * @param $domain Domain to verify
+		 * @return API Result
+		 */
+		public function verifyDomain($domain) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/verify');
 		}
 
 		/**
