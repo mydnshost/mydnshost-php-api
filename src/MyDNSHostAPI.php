@@ -1247,6 +1247,10 @@
 
 			try {
 				if ($method == 'GET') {
+					if (!is_array($data)) {
+						$data = empty($data) ? [] : ['data' => $data];
+					}
+
 					if (count($data) > 0) {
 						$url = parse_url($url);
 						if (isset($url['query'])) {
