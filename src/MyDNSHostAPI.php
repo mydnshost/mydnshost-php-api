@@ -10,6 +10,8 @@
 		private $version = '1.0';
 		/** Auth Data. */
 		private $auth = FALSE;
+		/** API request timeout limit. */
+		private $timeout = null;
 		/** Are we impersonating someone? */
 		private $impersonate = FALSE;
 		/** Are we impersonating an email address or an ID? */
@@ -32,6 +34,17 @@
 		 */
 		public function __construct($baseurl) {
 			$this->baseurl = $baseurl;
+		}
+
+		/**
+		 * Change API Timeout value
+		 *
+		 * @param $value New timeout value
+		 * @return $this for chaining.
+		 */
+		public function setRequestTimeout($value) {
+			$this->timeout = $value;
+			return $this;
 		}
 
 		/**
@@ -1208,6 +1221,7 @@
 		public function api($apimethod, $method = 'GET', $data = [], $auth = NULL) {
 			$headers = [];
 			$options = [];
+			if ($this->timeout != NULL) { $options['timeout'] = $this->timeout; }
 			if ($auth == NULL) { $auth = $this->auth; }
 
 			if ($auth !== FALSE) {
