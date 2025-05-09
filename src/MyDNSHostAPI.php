@@ -1277,14 +1277,14 @@
 						$url = $this->unparse_url($url);
 					}
 
-					$response = Requests::get($url, $headers, $options);
+					$response = WpOrg\Requests\Requests::get($url, $headers, $options);
 				} else if ($method == 'POST') {
-					$response = Requests::post($url, $headers, json_encode(['data' => $data]), $options);
+					$response = WpOrg\Requests\Requests::post($url, $headers, json_encode(['data' => $data]), $options);
 				} else if ($method == 'DELETE') {
-					$response = Requests::delete($url, $headers, $options);
+					$response = WpOrg\Requests\Requests::delete($url, $headers, $options);
 				}
 				$data = @json_decode($response->body, TRUE);
-			} catch (Requests_Exception $ex) {
+			} catch (WpOrg\Requests\Exception $ex) {
 				$data = NULL;
 			}
 
