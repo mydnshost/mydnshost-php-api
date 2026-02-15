@@ -788,7 +788,7 @@
 		 * @param $domain Domain to get logs for.
 		 * @return Array of logs.
 		 */
-		public function getDomainLogs($domain) {
+		public function getDomainLogs($domain, $options = []) {
 			if ($this->auth === FALSE) { return []; }
 
 			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/logs', 'GET', $options);
