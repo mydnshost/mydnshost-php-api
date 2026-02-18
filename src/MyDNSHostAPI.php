@@ -436,6 +436,20 @@
 		}
 
 		/**
+		 * Get a specific API Key.
+		 *
+		 * @param $key Key ID to get
+		 * @param $userid User ID to get key for
+		 * @return API key data or NULL.
+		 */
+		public function getAPIKey($key, $userid = 'self') {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/users/' . $userid . '/keys/' . $key);
+			return isset($result['response']) ? $result['response'] : NULL;
+		}
+
+		/**
 		 * Create a new API Key.
 		 *
 		 * @param $data Data to use for the create
@@ -512,6 +526,20 @@
 
 			$result = $this->api('/users/' . $userid . '/2fa');
 			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
+		}
+
+		/**
+		 * Get a specific 2FA Key.
+		 *
+		 * @param $key Key ID to get
+		 * @param $userid User ID to get key for
+		 * @return 2FA key data or NULL.
+		 */
+		public function get2FAKey($key, $userid = 'self') {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/users/' . $userid . '/2fa/' . $key);
+			return isset($result['response']) ? $result['response'] : NULL;
 		}
 
 		/**
@@ -973,6 +1001,20 @@
 		}
 
 		/**
+		 * Get a specific Domain Key.
+		 *
+		 * @param $domain Domain to get key for
+		 * @param $key Key ID to get
+		 * @return Domain key data or NULL.
+		 */
+		public function getDomainKey($domain, $key) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/keys/' . $key);
+			return isset($result['response']) ? $result['response'] : NULL;
+		}
+
+		/**
 		 * Create a new Domain Key.
 		 *
 		 * @param $domain Domain to create key for
@@ -1023,6 +1065,20 @@
 
 			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/hooks');
 			return isset($result['response']) ? $result['response'] : (isset($result['error']) ? NULL : []);
+		}
+
+		/**
+		 * Get a specific Domain Hook.
+		 *
+		 * @param $domain Domain to get hook for
+		 * @param $hookid Hook ID to get
+		 * @return Domain hook data or NULL.
+		 */
+		public function getDomainHook($domain, $hookid) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/hooks/' . $hookid);
+			return isset($result['response']) ? $result['response'] : NULL;
 		}
 
 		/**
@@ -1199,6 +1255,147 @@
 			return $this->api('/admin/blockregexes/' . $blockregexid, 'DELETE');
 		}
 
+
+		/**
+		 * Get list of system jobs.
+		 *
+		 * @param $params Query parameters (filter, page, etc.)
+		 * @return Result from the API.
+		 */
+		public function getSystemJobs($params = []) {
+			if ($this->auth === FALSE) { return []; }
+
+			$url = '/system/jobs/list';
+			$qs = http_build_query($params);
+			if (!empty($qs)) { $url .= '?' . $qs; }
+
+			$result = $this->api($url);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Get a specific system job.
+		 *
+		 * @param $jobId Job ID to get
+		 * @return Result from the API.
+		 */
+		public function getSystemJob($jobId) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/system/jobs/' . $jobId);
+			return isset($result['response']) ? $result['response'] : NULL;
+		}
+
+		/**
+		 * Create a new system job.
+		 *
+		 * @param $data Job data (name, data, optional dependsOn)
+		 * @return Result from the API.
+		 */
+		public function createSystemJob($data) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/system/jobs/create', 'POST', $data);
+		}
+
+		/**
+		 * Repeat a system job.
+		 *
+		 * @param $jobId Job ID to repeat
+		 * @return Result from the API.
+		 */
+		public function repeatSystemJob($jobId) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/system/jobs/' . $jobId . '/repeat');
+		}
+
+		/**
+		 * Republish a system job.
+		 *
+		 * @param $jobId Job ID to republish
+		 * @return Result from the API.
+		 */
+		public function republishSystemJob($jobId) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/system/jobs/' . $jobId . '/republish');
+		}
+
+		/**
+		 * Cancel a system job.
+		 *
+		 * @param $jobId Job ID to cancel
+		 * @return Result from the API.
+		 */
+		public function cancelSystemJob($jobId) {
+			if ($this->auth === FALSE) { return []; }
+
+			return $this->api('/system/jobs/' . $jobId . '/cancel');
+		}
+
+		/**
+		 * Get logs for a system job.
+		 *
+		 * @param $jobId Job ID to get logs for
+		 * @return Array of job logs.
+		 */
+		public function getSystemJobLogs($jobId) {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/system/jobs/' . $jobId . '/logs');
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Get list of system services.
+		 *
+		 * @return Result from the API.
+		 */
+		public function getSystemServices() {
+			if ($this->auth === FALSE) { return []; }
+
+			$result = $this->api('/system/service/list');
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Get logs for a system service.
+		 *
+		 * @param $service Service name
+		 * @param $params Query parameters (page, stream, search)
+		 * @return Result from the API.
+		 */
+		public function getSystemServiceLogs($service, $params = []) {
+			if ($this->auth === FALSE) { return []; }
+
+			$url = '/system/service/' . $service . '/logs';
+			$qs = http_build_query($params);
+			if (!empty($qs)) { $url .= '?' . $qs; }
+
+			$result = $this->api($url);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Present an ACME DNS challenge record.
+		 *
+		 * @param $data Challenge data (fqdn/value or domain/token/keyAuth)
+		 * @return Result from the API.
+		 */
+		public function httpreqPresent($data) {
+			return $this->api('/external/httpreq/present', 'POST', $data);
+		}
+
+		/**
+		 * Cleanup an ACME DNS challenge record.
+		 *
+		 * @param $data Cleanup data (fqdn)
+		 * @return Result from the API.
+		 */
+		public function httpreqCleanup($data) {
+			return $this->api('/external/httpreq/cleanup', 'POST', $data);
+		}
 
 		/**
 		 * Get the last response from the API
