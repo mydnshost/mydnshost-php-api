@@ -1395,6 +1395,36 @@
 		}
 
 		/**
+		 * Get audit log entries.
+		 *
+		 * @param $params Query parameters (filter, page, etc.)
+		 * @return Result from the API.
+		 */
+		public function getAuditLog($params = []) {
+			if ($this->auth === FALSE) { return []; }
+
+			$url = '/system/audit/list';
+			$qs = http_build_query($params);
+			if (!empty($qs)) { $url .= '?' . $qs; }
+
+			$result = $this->api($url);
+			return isset($result['response']) ? $result['response'] : [];
+		}
+
+		/**
+		 * Get a specific audit log entry.
+		 *
+		 * @param $id Audit entry ID
+		 * @return Result from the API.
+		 */
+		public function getAuditEntry($id) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/system/audit/' . $id);
+			return isset($result['response']) ? $result['response'] : NULL;
+		}
+
+		/**
 		 * Get list of system services.
 		 *
 		 * @return Result from the API.
