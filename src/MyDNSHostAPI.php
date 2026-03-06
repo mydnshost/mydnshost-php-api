@@ -26,6 +26,10 @@
 		private $deviceID = NULL;
 		/** Our device Name. */
 		private $deviceName = NULL;
+		/** Admin elevation token. */
+		private $adminToken = FALSE;
+		/** Was admin elevation required on the last API call? */
+		private $adminElevationRequired = FALSE;
 
 		/**
 		 * Create a new MyDNSHostAPI
@@ -185,6 +189,49 @@
 			$this->impersonateType = $type;
 
 			return $this;
+		}
+
+		/**
+		 * Set admin elevation token.
+		 *
+		 * @param $token Admin token JWT.
+		 * @return $this for chaining.
+		 */
+		public function setAdminToken($token) {
+			$this->adminToken = $token;
+			return $this;
+		}
+
+		/**
+		 * Clear admin elevation token.
+		 *
+		 * @return $this for chaining.
+		 */
+		public function clearAdminToken() {
+			$this->adminToken = FALSE;
+			return $this;
+		}
+
+		/**
+		 * Check if admin elevation was required on the last API call.
+		 *
+		 * @return boolean True if the last API response indicated elevation was required.
+		 */
+		public function isAdminElevationRequired() {
+			return $this->adminElevationRequired;
+		}
+
+		/**
+		 * Request an admin elevation token.
+		 *
+		 * @param $data Data to send (e.g. ['code' => '123456'] or ['password' => 'secret'])
+		 * @return Array with 'admintoken' and 'expires', or error response.
+		 */
+		public function getAdminToken($data) {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/session/admintoken', 'POST', $data);
+			return isset($result['response']) ? $result['response'] : $result;
 		}
 
 		/**
@@ -1307,7 +1354,7 @@
 		public function repeatSystemJob($jobId) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/system/jobs/' . $jobId . '/repeat');
+			return $this->api('/system/jobs/' . $jobId . '/repeat', 'POST');
 		}
 
 		/**
@@ -1319,7 +1366,7 @@
 		public function republishSystemJob($jobId) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/system/jobs/' . $jobId . '/republish');
+			return $this->api('/system/jobs/' . $jobId . '/republish', 'POST');
 		}
 
 		/**
@@ -1331,7 +1378,7 @@
 		public function cancelSystemJob($jobId) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api('/system/jobs/' . $jobId . '/cancel');
+			return $this->api('/system/jobs/' . $jobId . '/cancel', 'POST');
 		}
 
 		/**
@@ -1454,6 +1501,10 @@
 				}
 			}
 
+			if ($this->adminToken !== FALSE) {
+				$headers['X-Admin-Token'] = $this->adminToken;
+			}
+
 			$url = sprintf('%s/%s/%s', rtrim($this->baseurl, '/'), $this->version, ltrim($apimethod, '/'));
 
 			try {
@@ -1498,6 +1549,7 @@
 				$data['__DEBUG'] = $debug;
 			}
 
+			$this->adminElevationRequired = isset($data['admin_elevation']) && $data['admin_elevation'] === 'required';
 			$this->lastResponse = $data;
 			return $data;
 		}
