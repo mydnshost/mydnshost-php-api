@@ -698,6 +698,30 @@
 		}
 
 		/**
+		 * Check if we are able to do 2fa push
+		 *
+		 * @return True or false if 2fa push is enabled
+		 */
+		public function check2FAPush() {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/session/2fa_push/check');
+			return isset($result['response']['hasPushKey']) ? $result['response']['hasPushKey'] : false;
+		}
+
+		/**
+		 * Get a 2fa_push token from the backend
+		 *
+		 * @return A short-term 2FA pushcode to prove a successful push, or NULL.
+		 */
+		public function get2FAPushCode() {
+			if ($this->auth === FALSE) { return NULL; }
+
+			$result = $this->api('/session/2fa_push');
+			return isset($result['response']['pushcode']) ? $result['response']['pushcode'] : NULL;
+		}
+
+		/**
 		 * Get a JWT Token from the backend
 		 *
 		 * @return Backend JWT Token or null if we are not authed.
