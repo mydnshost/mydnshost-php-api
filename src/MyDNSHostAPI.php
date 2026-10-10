@@ -938,12 +938,20 @@
 		 * @param $domain Domain to import.
 		 * @param $zone Zonefile data
 		 * @param $type (Optional) Format to import from as
+		 * @param $replaceNameservers (Optional) Replace the apex NS records in the
+		 *                            zone with these nameservers. Either an array
+		 *                            of nameservers, or TRUE to use the defaults.
 		 * @return Array of records or an empty array.
 		 */
-		public function importZone($domain, $zone, $type = NULL) {
+		public function importZone($domain, $zone, $type = NULL, $replaceNameservers = NULL) {
 			if ($this->auth === FALSE) { return []; }
 
-			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/import' . ($type !== NULL ? '/' . $type : ''), 'POST', ['zone' => $zone]);
+			$data = ['zone' => $zone];
+			if ($replaceNameservers !== NULL && $replaceNameservers !== FALSE) {
+				$data['replaceNameservers'] = $replaceNameservers;
+			}
+
+			return $this->api(($this->domainAdmin ? '/admin' : '') . '/domains/' . $domain . '/import' . ($type !== NULL ? '/' . $type : ''), 'POST', $data);
 		}
 
 
